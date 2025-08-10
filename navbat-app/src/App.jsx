@@ -1,31 +1,28 @@
 import React, { useState, useEffect, createContext } from "react";
-import { Routes, Route, Link, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import clsx from "clsx";
 
-// Контекст пользователя
 export const AuthContext = createContext(null);
-
-// ----- UI-компоненты -----
 
 const Nav = () => {
   const { user, logout } = React.useContext(AuthContext);
   return (
-    <nav className="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-      <Link to="/" className="font-bold text-xl text-blue-600">
+    <nav className="bg-white shadow px-5 py-3 flex justify-between items-center sticky top-0 z-20">
+      <Link to="/" className="font-extrabold text-2xl text-blue-600">
         Navbat
       </Link>
-      <div className="space-x-4 text-gray-700">
-        <Link to="/masters" className="hover:text-blue-600">
+      <div className="space-x-5 text-gray-700 flex items-center">
+        <Link to="/masters" className="hover:text-blue-600 font-semibold">
           Мастера
         </Link>
         {user ? (
           <>
-            <Link to="/profile" className="hover:text-blue-600">
+            <Link to="/profile" className="hover:text-blue-600 font-semibold">
               {user.role === "master" ? "Кабинет мастера" : "Кабинет клиента"}
             </Link>
             <button
               onClick={logout}
-              className="text-red-500 hover:text-red-700 font-semibold"
+              className="text-red-500 hover:text-red-700 font-semibold ml-4"
               aria-label="Выйти"
             >
               Выйти
@@ -33,10 +30,10 @@ const Nav = () => {
           </>
         ) : (
           <>
-            <Link to="/login" className="hover:text-blue-600">
+            <Link to="/login" className="hover:text-blue-600 font-semibold">
               Войти
             </Link>
-            <Link to="/register" className="hover:text-blue-600">
+            <Link to="/register" className="hover:text-blue-600 font-semibold">
               Регистрация
             </Link>
           </>
@@ -46,23 +43,22 @@ const Nav = () => {
   );
 };
 
-// Главная страница
 const Home = () => (
-  <div className="max-w-4xl mx-auto p-4 text-center">
-    <h1 className="text-3xl font-extrabold mb-4">Navbat</h1>
-    <p className="mb-6 text-gray-700">
-      Онлайн-запись и заказ услуг — быстро и удобно
+  <div className="max-w-5xl mx-auto p-6 text-center">
+    <h1 className="text-4xl font-bold mb-3">Добро пожаловать в Navbat</h1>
+    <p className="text-gray-600 mb-6 text-lg">
+      Онлайн-сервис для записи и заказа услуг от мастеров вашего города
     </p>
     <Link
       to="/masters"
-      className="inline-block px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
+      className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
     >
       Найти мастера
     </Link>
   </div>
 );
 
-// Фейковая база мастеров
+// Фейковые данные мастеров
 const fakeMasters = [
   {
     id: "1",
@@ -70,17 +66,13 @@ const fakeMasters = [
     role: "master",
     service: "Парикмахер",
     rating: 4.9,
-    description: "Опытный парикмахер, стрижки и окрашивания.",
+    description: "Опытный парикмахер, стрижки и окрашивания любой сложности.",
     avatar:
       "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=64&q=80",
     schedule: ["09:00", "10:00", "12:00", "15:00", "16:00"],
     reviews: [
-      {
-        id: "r1",
-        user: "Ирина",
-        rating: 5,
-        comment: "Отличная работа, приду ещё!",
-      },
+      { id: "r1", user: "Ирина", rating: 5, comment: "Отличная работа, приду ещё!" },
+      { id: "r3", user: "Олег", rating: 4, comment: "Всё хорошо, рекомендую." },
     ],
   },
   {
@@ -94,71 +86,60 @@ const fakeMasters = [
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=64&q=80",
     schedule: ["08:00", "11:00", "13:00", "17:00"],
     reviews: [
-      {
-        id: "r2",
-        user: "Михаил",
-        rating: 4,
-        comment: "Все починил быстро и качественно.",
-      },
+      { id: "r2", user: "Михаил", rating: 4, comment: "Все починил быстро и качественно." },
     ],
   },
 ];
 
-// Список мастеров с фильтром и переходом на профиль
 const Masters = () => {
   const [masters, setMasters] = useState(fakeMasters);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    if (!filter) {
-      setMasters(fakeMasters);
-    } else {
+    if (!filter) setMasters(fakeMasters);
+    else
       setMasters(
         fakeMasters.filter((m) =>
           m.service.toLowerCase().includes(filter.toLowerCase())
         )
       );
-    }
   }, [filter]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4">Список мастеров</h2>
+    <div className="max-w-5xl mx-auto p-5">
+      <h2 className="text-3xl font-semibold mb-5">Список мастеров</h2>
       <input
         type="text"
         placeholder="Поиск по услуге..."
-        className="w-full p-2 border border-gray-300 rounded mb-4"
+        className="w-full p-3 border border-gray-300 rounded mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        aria-label="Поиск мастеров по услуге"
+        aria-label="Поиск мастеров"
       />
       {masters.length === 0 ? (
-        <p>Мастера не найдены.</p>
+        <p>Мастера не найдены</p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="space-y-5">
           {masters.map((m) => (
             <li
               key={m.id}
-              className="flex items-center gap-4 p-4 bg-white rounded shadow hover:shadow-md transition cursor-pointer"
-              role="button"
-              tabIndex={0}
+              className="flex items-center gap-5 bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer"
               onClick={() => (window.location.href = `/master/${m.id}`)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") window.location.href = `/master/${m.id}`;
-              }}
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && (window.location.href = `/master/${m.id}`)}
+              role="button"
+              aria-label={`Профиль мастера ${m.name}`}
             >
               <img
                 src={m.avatar}
-                alt={`Аватар ${m.name}`}
-                className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                alt={`Фото ${m.name}`}
+                className="w-20 h-20 rounded-full object-cover flex-shrink-0"
                 loading="lazy"
               />
-              <div className="flex flex-col">
-                <span className="text-lg font-semibold">{m.name}</span>
-                <span className="text-sm text-gray-600">{m.service}</span>
-                <span className="text-yellow-500 font-semibold">
-                  ★ {m.rating.toFixed(1)}
-                </span>
+              <div>
+                <h3 className="text-xl font-semibold">{m.name}</h3>
+                <p className="text-gray-700">{m.service}</p>
+                <p className="text-yellow-500 font-semibold mt-1">★ {m.rating.toFixed(1)}</p>
               </div>
             </li>
           ))}
@@ -168,8 +149,8 @@ const Masters = () => {
   );
 };
 
-// Профиль мастера с расписанием и бронированием
-const MasterProfile = ({ id }) => {
+const MasterProfile = () => {
+  const { id } = useParams();
   const { user } = React.useContext(AuthContext);
   const [master, setMaster] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
@@ -180,11 +161,8 @@ const MasterProfile = ({ id }) => {
     const m = fakeMasters.find((m) => m.id === id);
     setMaster(m);
 
-    // Загрузим брони из localStorage для этого мастера
     const stored = localStorage.getItem(`bookings_${id}`);
-    if (stored) {
-      setBookings(JSON.parse(stored));
-    }
+    if (stored) setBookings(JSON.parse(stored));
   }, [id]);
 
   const bookTime = () => {
@@ -204,138 +182,180 @@ const MasterProfile = ({ id }) => {
     setBookings(newBookings);
     localStorage.setItem(`bookings_${id}`, JSON.stringify(newBookings));
     setMessage(`Вы успешно забронировали время: ${selectedTime}`);
+
+    // Сохраняем заказ для клиента и мастера
+    const allBookings = JSON.parse(localStorage.getItem("allBookings")) || [];
+    allBookings.push({
+      id: Date.now().toString(),
+      masterId: id,
+      masterName: master.name,
+      userId: user.id,
+      userName: user.username,
+      time: selectedTime,
+      status: "Ожидает подтверждения",
+    });
+    localStorage.setItem("allBookings", JSON.stringify(allBookings));
   };
 
-  if (!master) return <div className="p-4">Мастер не найден.</div>;
+  if (!master) return <div className="p-5">Мастер не найден</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-3xl font-bold mb-2">{master.name}</h2>
-      <p className="text-gray-600 mb-4">{master.description}</p>
-      <div className="flex items-center gap-4 mb-6">
+    <div className="max-w-5xl mx-auto p-5">
+      <button
+        onClick={() => window.history.back()}
+        className="mb-4 text-blue-600 hover:underline"
+      >
+        ← Назад к списку
+      </button>
+      <div className="flex flex-col md:flex-row gap-6">
         <img
           src={master.avatar}
           alt={`Фото ${master.name}`}
-          className="w-24 h-24 rounded-full object-cover"
+          className="w-48 h-48 rounded-full object-cover self-center md:self-start"
         />
-        <div>
-          <p className="text-lg font-semibold">{master.service}</p>
-          <p className="text-yellow-500 font-semibold">★ {master.rating}</p>
+        <div className="flex-1">
+          <h2 className="text-3xl font-bold mb-2">{master.name}</h2>
+          <p className="mb-3 text-gray-700">{master.description}</p>
+          <p className="text-lg font-semibold mb-3">{master.service}</p>
+          <p className="text-yellow-500 font-semibold mb-4">★ {master.rating}</p>
+          <h3 className="text-xl font-semibold mb-2">Доступное время для записи</h3>
+          <div className="flex flex-wrap gap-3 mb-5">
+            {master.schedule.map((time) => {
+              const isBooked = bookings.includes(time);
+              return (
+                <button
+                  key={time}
+                  disabled={isBooked}
+                  onClick={() => setSelectedTime(time)}
+                  className={clsx(
+                    "px-5 py-2 rounded border transition",
+                    isBooked
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : selectedTime === time
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white text-gray-700 hover:bg-blue-100 border-gray-300"
+                  )}
+                  aria-pressed={selectedTime === time}
+                >
+                  {time}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={bookTime}
+            className="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700 transition"
+            aria-label="Забронировать выбранное время"
+          >
+            Забронировать
+          </button>
+          {message && (
+            <p className="mt-4 text-sm text-red-600" role="alert">
+              {message}
+            </p>
+          )}
+          <h3 className="mt-8 text-xl font-semibold mb-3">Отзывы</h3>
+          {master.reviews.length === 0 ? (
+            <p>Отзывы отсутствуют</p>
+          ) : (
+            <ul className="space-y-3">
+              {master.reviews.map((r) => (
+                <li
+                  key={r.id}
+                  className="border p-3 rounded bg-gray-50 shadow-sm"
+                  aria-label={`Отзыв пользователя ${r.user}`}
+                >
+                  <p className="font-semibold">{r.user}</p>
+                  <p>★ {r.rating}</p>
+                  <p>{r.comment}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
-      <h3 className="text-xl font-semibold mb-2">Доступное время</h3>
-      <div className="flex flex-wrap gap-3 mb-4">
-        {master.schedule.map((time) => {
-          const isBooked = bookings.includes(time);
-          return (
-            <button
-              key={time}
-              disabled={isBooked}
-              onClick={() => setSelectedTime(time)}
-              className={clsx(
-                "px-4 py-2 rounded border",
-                isBooked
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : selectedTime === time
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white border-gray-300 hover:bg-blue-50"
-              )}
-            >
-              {time}
-            </button>
-          );
-        })}
-      </div>
-      <button
-        onClick={bookTime}
-        className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        Забронировать
-      </button>
-      {message && <p className="mt-4 text-red-600">{message}</p>}
-
-      <h3 className="text-xl font-semibold mt-8 mb-2">Отзывы</h3>
-      {master.reviews.length === 0 ? (
-        <p>Нет отзывов</p>
-      ) : (
-        <ul className="space-y-3">
-          {master.reviews.map((r) => (
-            <li
-              key={r.id}
-              className="border rounded p-3 bg-white shadow-sm"
-              aria-label={`Отзыв от ${r.user}`}
-            >
-              <p className="font-semibold">{r.user}</p>
-              <p className="text-yellow-500">★ {r.rating}</p>
-              <p>{r.comment}</p>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 };
 
-// Регистрация и авторизация (упрощённая, с localStorage)
 const AuthForm = ({ mode }) => {
-  const navigate = useNavigate();
   const { login } = React.useContext(AuthContext);
-  const [form, setForm] = useState({ username: "", password: "", role: "client" });
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+    role: "client",
+  });
   const [error, setError] = useState("");
 
   const onChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    const users =
-      JSON.parse(localStorage.getItem("users")) || [];
+    setError("");
+
+    // Проверка валидности
+    if (!form.username || !form.password) {
+      setError("Заполните все поля");
+      return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
 
     if (mode === "register") {
-      if (!form.username || !form.password) {
-        setError("Заполните все поля");
-        return;
-      }
+      // Проверка уникальности логина
       if (users.find((u) => u.username === form.username)) {
         setError("Пользователь с таким именем уже существует");
         return;
       }
-      const newUser = { ...form, id: Date.now().toString() };
+      // Создаем нового пользователя
+      const newUser = {
+        id: Date.now().toString(),
+        username: form.username,
+        password: form.password,
+        role: form.role,
+      };
       users.push(newUser);
       localStorage.setItem("users", JSON.stringify(users));
       login(newUser);
-      navigate("/");
+      navigate("/profile");
     } else {
-      // login
+      // Вход
       const user = users.find(
         (u) => u.username === form.username && u.password === form.password
       );
       if (!user) {
-        setError("Неверное имя пользователя или пароль");
+        setError("Неверный логин или пароль");
         return;
       }
       login(user);
-      navigate("/");
+      navigate("/profile");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-12 p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4 capitalize">
+    <div className="max-w-md mx-auto p-6 mt-10 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-6">
         {mode === "register" ? "Регистрация" : "Вход"}
       </h2>
-      {error && <p className="text-red-600 mb-4">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4" aria-label={`${mode} форма`}>
+      {error && (
+        <p className="mb-4 text-red-600" role="alert" aria-live="assertive">
+          {error}
+        </p>
+      )}
+      <form onSubmit={onSubmit} noValidate>
         <input
           type="text"
           name="username"
           placeholder="Имя пользователя"
           value={form.username}
           onChange={onChange}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
           aria-required="true"
+          autoComplete="username"
         />
         <input
           type="password"
@@ -343,16 +363,17 @@ const AuthForm = ({ mode }) => {
           placeholder="Пароль"
           value={form.password}
           onChange={onChange}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
           aria-required="true"
+          autoComplete={mode === "register" ? "new-password" : "current-password"}
         />
         {mode === "register" && (
           <select
             name="role"
             value={form.role}
             onChange={onChange}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             aria-label="Выберите роль"
           >
             <option value="client">Клиент</option>
@@ -361,7 +382,8 @@ const AuthForm = ({ mode }) => {
         )}
         <button
           type="submit"
-          className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          aria-label={mode === "register" ? "Зарегистрироваться" : "Войти"}
         >
           {mode === "register" ? "Зарегистрироваться" : "Войти"}
         </button>
@@ -370,32 +392,30 @@ const AuthForm = ({ mode }) => {
   );
 };
 
-// Личный кабинет клиента
 const ClientProfile = () => {
   const { user } = React.useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
-    const allBookings =
-      JSON.parse(localStorage.getItem("allBookings")) || [];
-    // Фильтруем брони по юзеру
+    const allBookings = JSON.parse(localStorage.getItem("allBookings")) || [];
     const userBookings = allBookings.filter((b) => b.userId === user.id);
     setBookings(userBookings);
   }, [user]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4">Личный кабинет клиента</h2>
-      <p className="mb-4">Имя: {user.username}</p>
-      <h3 className="text-xl font-semibold mb-2">Мои бронирования</h3>
+    <div className="max-w-5xl mx-auto p-6">
+      <h2 className="text-3xl font-semibold mb-6">Личный кабинет клиента</h2>
+      <p className="mb-4">Привет, {user.username}!</p>
+      <h3 className="text-xl font-semibold mb-4">Мои бронирования</h3>
       {bookings.length === 0 ? (
-        <p>Нет бронирований</p>
+        <p>У вас пока нет бронирований.</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-4">
           {bookings.map((b) => (
             <li
               key={b.id}
-              className="p-3 border rounded bg-white shadow-sm"
+              className="p-4 border rounded shadow bg-white"
+              aria-label={`Бронирование у мастера ${b.masterName} на ${b.time}`}
             >
               <p>
                 Мастер: <strong>{b.masterName}</strong>
@@ -410,38 +430,36 @@ const ClientProfile = () => {
   );
 };
 
-// Личный кабинет мастера
 const MasterProfilePage = () => {
   const { user } = React.useContext(AuthContext);
-  const [bookings, setBookings] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const allBookings =
-      JSON.parse(localStorage.getItem("allBookings")) || [];
-    // Фильтруем брони по мастеру
-    const userBookings = allBookings.filter((b) => b.masterId === user.id);
-    setBookings(userBookings);
+    const allBookings = JSON.parse(localStorage.getItem("allBookings")) || [];
+    const myOrders = allBookings.filter((b) => b.masterId === user.id);
+    setOrders(myOrders);
   }, [user]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4">Личный кабинет мастера</h2>
-      <p className="mb-4">Имя: {user.username}</p>
-      <h3 className="text-xl font-semibold mb-2">Мои заказы</h3>
-      {bookings.length === 0 ? (
-        <p>Нет заказов</p>
+    <div className="max-w-5xl mx-auto p-6">
+      <h2 className="text-3xl font-semibold mb-6">Личный кабинет мастера</h2>
+      <p className="mb-4">Здравствуйте, {user.username}!</p>
+      <h3 className="text-xl font-semibold mb-4">Заказы от клиентов</h3>
+      {orders.length === 0 ? (
+        <p>Пока нет заказов.</p>
       ) : (
-        <ul className="space-y-3">
-          {bookings.map((b) => (
+        <ul className="space-y-4">
+          {orders.map((o) => (
             <li
-              key={b.id}
-              className="p-3 border rounded bg-white shadow-sm"
+              key={o.id}
+              className="p-4 border rounded shadow bg-white"
+              aria-label={`Заказ от клиента ${o.userName} на ${o.time}, статус ${o.status}`}
             >
               <p>
-                Клиент: <strong>{b.userName}</strong>
+                Клиент: <strong>{o.userName}</strong>
               </p>
-              <p>Дата и время: {b.time}</p>
-              <p>Статус: {b.status}</p>
+              <p>Дата и время: {o.time}</p>
+              <p>Статус: {o.status}</p>
             </li>
           ))}
         </ul>
@@ -450,29 +468,29 @@ const MasterProfilePage = () => {
   );
 };
 
-// Компонент страницы профиля (выбирает кабинет по роли)
 const Profile = () => {
   const { user } = React.useContext(AuthContext);
   if (!user) return <Navigate to="/login" />;
-
-  return user.role === "master" ? (
-    <MasterProfilePage />
-  ) : (
-    <ClientProfile />
-  );
+  return user.role === "master" ? <MasterProfilePage /> : <ClientProfile />;
 };
 
-// Основное приложение
-const App = () => {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("currentUser")) || null
-  );
+const NotFound = () => (
+  <div className="max-w-5xl mx-auto p-6 text-center">
+    <h2 className="text-4xl font-bold mb-6">404 — Страница не найдена</h2>
+    <Link to="/" className="text-blue-600 hover:underline text-lg">
+      Вернуться на главную
+    </Link>
+  </div>
+);
 
-  // Функции авторизации
+const App = () => {
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("currentUser")) || null);
+
   const login = (userData) => {
     localStorage.setItem("currentUser", JSON.stringify(userData));
     setUser(userData);
   };
+
   const logout = () => {
     localStorage.removeItem("currentUser");
     setUser(null);
@@ -480,18 +498,13 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50">
         <Nav />
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/masters" element={<Masters />} />
-            <Route
-              path="/master/:id"
-              element={
-                <MasterRoute />
-              }
-            />
+            <Route path="/master/:id" element={<MasterProfile />} />
             <Route path="/login" element={<AuthForm mode="login" />} />
             <Route path="/register" element={<AuthForm mode="register" />} />
             <Route path="/profile" element={<Profile />} />
@@ -505,22 +518,5 @@ const App = () => {
     </AuthContext.Provider>
   );
 };
-
-// Вспомогательный компонент для маршрута мастера с параметром id
-import { useParams } from "react-router-dom";
-const MasterRoute = () => {
-  const { id } = useParams();
-  return <MasterProfile id={id} />;
-};
-
-// Страница 404
-const NotFound = () => (
-  <div className="max-w-4xl mx-auto p-4 text-center">
-    <h2 className="text-3xl font-bold mb-4">404 — Страница не найдена</h2>
-    <Link to="/" className="text-blue-600 hover:underline">
-      Вернуться на главную
-    </Link>
-  </div>
-);
 
 export default App;
